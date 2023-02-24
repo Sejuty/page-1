@@ -23,10 +23,9 @@ const Page2 = () => {
     users();
   }, []);
 
-
   const deleteTableRows = (index) => {
-    console.log(index)
-    const rows = [...slice];
+    index = index + (page - 1) * noOfRows;
+    const rows = [...rowsData];
     rows.splice(index, 1);
     setRowsData(rows);
   };
@@ -38,7 +37,6 @@ const Page2 = () => {
   const _handleKeyDown = (e) => {
     setNoOfrows(e.target.value);
   };
-  
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-4">
@@ -78,7 +76,11 @@ const Page2 = () => {
         </thead>
         <tbody>
           {/* {DisplayData} */}
-          <TableRows slice={slice} deleteTableRows={deleteTableRows} noOfRows={noOfRows}/>
+          <TableRows
+            rowsData={slice}
+            deleteTableRows={deleteTableRows}
+            noOfRows={noOfRows}
+          />
           <tr>
             <td colSpan="6">
               <div className="float-root">

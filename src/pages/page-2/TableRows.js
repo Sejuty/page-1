@@ -4,7 +4,7 @@ import { MdContentCopy } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Copied from "./copyToClipboard";
 
-const TableRows = ({ slice, deleteTableRows}) => {
+const TableRows = ({ rowsData, deleteTableRows, noOfRows }) => {
   const [isCopied, setIsCopied] = useState(false);
   const onCopyText = () => {
     setIsCopied(true);
@@ -12,7 +12,7 @@ const TableRows = ({ slice, deleteTableRows}) => {
       setIsCopied(false);
     }, 1000);
   };
-  return slice.map((data, index) => {
+  return rowsData.map((data, index) => {
     const { id, username, email, website } = data;
     return (
       <tr key={index} className="border-grey border">
@@ -49,14 +49,16 @@ const TableRows = ({ slice, deleteTableRows}) => {
               setIsCopied(true);
               setTimeout(() => {
                 setIsCopied(false);
-              },1000);
+              }, 1000);
             }}
             className="hover:text-dark hover:scale-110"
-          >
-          </MdContentCopy>
-          {isCopied && <Copied/>}
+          ></MdContentCopy>
+          {isCopied && <Copied />}
         </td>
-        <td onClick={() => deleteTableRows(index)} className="px-6 py-4">
+        <td
+          onClick={() => deleteTableRows(index)}
+          className="px-6 py-4"
+        >
           <div className=" flex items-center justify-center cursor-pointer">
             <RiDeleteBinLine className="text-red"></RiDeleteBinLine>
           </div>
