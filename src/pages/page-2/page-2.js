@@ -1,36 +1,45 @@
-import React from "react";
-import { useState } from "react";
-import TableRows from "./TableRows";
+import React, { useEffect, useState } from "react";
 import "../../index.css";
+import TableFooter from "./component/pagination-footer/TableFooter";
+import useTable from "./component/hook/useTable";
+import TableRows from "./TableRows";
 
-const Page1 = () => {
+const Page2 = () => {
   const [rowsData, setRowsData] = useState([]);
   const [add, setAdd] = useState("");
+  const [page, setPage] = useState(1);
+  const [noOfRows, setNoOfrows] = useState(5);
+  const { slice, range } = useTable(rowsData, page, noOfRows);
 
-  const addTableRows = (e) => {
-    if (e.key === "Enter") {
-      const addRows = parseInt(add);
-      const newData = [];
-      for (let i = 0; i < addRows; i++) {
-        newData.push({});
-      }
-      setRowsData([...rowsData, ...newData]);
-      setAdd("");
-    }
+  const users = async () => {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/users"
+    ).then((response) => response.json());
+
+    setRowsData([...response]);
   };
-  const addOneRow = () => {
-    const row = {};
-    setRowsData([...rowsData, row]);
-  };
-  const _handleKeyDown = (e) => {
-    setAdd(e.target.value);
-  };
+
+  useEffect(() => {
+    users();
+  }, []);
+
 
   const deleteTableRows = (index) => {
-    const rows = [...rowsData];
+    console.log(index)
+    const rows = [...slice];
     rows.splice(index, 1);
     setRowsData(rows);
   };
+  // const changePage = (e) => {
+  //   if (e.key === "Enter") {
+  //     console.log("Yes");
+  //   }
+  // };
+  const _handleKeyDown = (e) => {
+    setNoOfrows(e.target.value);
+  };
+  
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-4">
       <table className="w-full text-lg text-left dark:text-black">
@@ -40,7 +49,7 @@ const Page1 = () => {
               colSpan="6"
               className="bg-light text-dark px-6 py-4 font-normal"
             >
-              Table QR Management
+              Personnel Information
             </th>
           </tr>
           <tr>
@@ -51,16 +60,16 @@ const Page1 = () => {
               ></input>
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              S/N
+              id
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              Table Name
+              username
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              QR Code
+              email
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              URL
+              website
             </th>
             <th scope="col" className="px-6 py-4 text-center">
               Option
@@ -69,11 +78,7 @@ const Page1 = () => {
         </thead>
         <tbody>
           {/* {DisplayData} */}
-          <TableRows
-            rowsData={rowsData}
-            deleteTableRows={deleteTableRows}
-            add={add}
-          />
+          <TableRows slice={slice} deleteTableRows={deleteTableRows} noOfRows={noOfRows}/>
           <tr>
             <td colSpan="6">
               <div className="float-root">
@@ -87,23 +92,21 @@ const Page1 = () => {
                 </div>
                 <div className="float-right">
                   <div className="flex flex-row py-3 px-3 space-x-3">
-                    <div>Add</div>
-                    <input
+                    {/* <input
                       type="number"
                       min="1"
                       onChange={_handleKeyDown}
-                      onKeyDown={addTableRows}
-                      value={add}
+                      onKeyDown={changePage}
                       placeholder="N"
                       className="w-12 h-9 bg-light text-center rounded"
-                    ></input>
-                    <div>tables</div>
-                    <button
-                      onClick={addOneRow}
-                      className="px-5 text-2xl bg-dark rounded text-normal text-light text-center pb-1"
-                    >
-                      +
-                    </button>
+                    ></input> */}
+
+                    <TableFooter
+                      range={range}
+                      slice={slice}
+                      setPage={setPage}
+                      page={page}
+                    />
                   </div>
                 </div>
               </div>
@@ -115,4 +118,4 @@ const Page1 = () => {
   );
 };
 
-export default Page1;
+export default Page2;

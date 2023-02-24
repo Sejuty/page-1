@@ -1,0 +1,19 @@
+.button {
+  border: none;
+  padding: 7px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 4px;
+  margin-left: 4px;
+  transition: all 0.2s ease-in;
+}
+
+.activeButton {
+  color: white;
+  background: #6a13f4;
+}
+
+.inactiveButton {
+  color: #6a13f4;
+  background: #f0e8ff;
+}
