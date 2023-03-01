@@ -9,10 +9,8 @@ const useTable = (data, page, rowsPerPage) => {
   useEffect(() => {
     const range = calculateRange(data, rowsPerPage);
     setTableRange([...range]);
-    console.log(range)
     const slice = sliceData(data, page, rowsPerPage);
     setSlice([...slice]);
-    console.log(slice)
   }, [data, setTableRange, page, setSlice, rowsPerPage]);
 
   return { slice, range: tableRange };

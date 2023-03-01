@@ -3,7 +3,8 @@ import { BsDownload } from "react-icons/bs";
 import { MdContentCopy } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 
-const TableRows = ({ rowsData, deleteTableRows }) => {
+const TableRows = ({ rowsData, deleteTableRows}) => {
+
   return rowsData.map((data, index) => {
     return (
       <tr key={index} className="border-grey border">

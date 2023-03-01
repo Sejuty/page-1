@@ -1,15 +1,39 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TableRows from "./TableRows";
 import "../../index.css";
+import Axios from "axios";
 
 const Page1 = () => {
   const [rowsData, setRowsData] = useState([]);
   const [add, setAdd] = useState("");
+  const [users, setUsers] = useState([])
+
+
+  async function getUsers() {
+    try {
+      const response = await Axios.get(
+        "https://reqres.in/api/users?page=1"
+      );
+      const data = response.data.data
+      // setUsers(data)
+      // console.log(users)
+
+      setRowsData([...data])
+      console.log(rowsData)
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   const addTableRows = (e) => {
+    let addRows;
     if (e.key === "Enter") {
-      const addRows = parseInt(add);
+      addRows = parseInt(add);
+
       const newData = [];
       for (let i = 0; i < addRows; i++) {
         newData.push({});
@@ -51,19 +75,19 @@ const Page1 = () => {
               ></input>
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              S/N
+              id
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              Table Name
+             Avatar
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              QR Code
+              First Name
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              URL
+              Last Name
             </th>
             <th scope="col" className="px-6 py-4 text-center">
-              Option
+              Email
             </th>
           </tr>
         </thead>
@@ -73,6 +97,7 @@ const Page1 = () => {
             rowsData={rowsData}
             deleteTableRows={deleteTableRows}
             add={add}
+            users = {users}
           />
           <tr>
             <td colSpan="6">
@@ -99,8 +124,8 @@ const Page1 = () => {
                     ></input>
                     <div>tables</div>
                     <button
-                      onClick={addOneRow}
-                      className="px-5 text-2xl bg-dark rounded text-normal text-light text-center pb-1"
+                      onClick={addTableRows}
+                      className="add px-5 text-2xl bg-dark rounded text-normal text-light text-center pb-1"
                     >
                       +
                     </button>
