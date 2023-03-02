@@ -86,7 +86,7 @@ const Page2 = () => {
 
   const handleCheckedAll = () => {
     setCheckedAll(!checkedAll);
-    childRef.current.selectAll();
+    // childRef.current.selectAll();
   };
   // ==================================================
 

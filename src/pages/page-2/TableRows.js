@@ -9,7 +9,13 @@ import Axios from "axios";
 const TableRows = forwardRef(
   ({ rowsData, slice, deleteTableRows, setRowsData, checkedAll }, ref) => {
     const [isCopied, setIsCopied] = useState(false);
-    const [singleCheck, setSingleCheck] = useState();
+
+    let checked = [...Array(rowsData.length + 1)].map(() => {
+      return { isChecked: false };
+    });
+    const [singleCheck, setSingleCheck] = useState([]);
+
+    console.log("single",singleCheck)
 
     const createUser = async (id, first_name, last_name, email) => {
       try {
@@ -33,6 +39,16 @@ const TableRows = forwardRef(
       }
     };
 
+    useEffect(() => {
+      for (let i = 0; i < checked.length; i++) {
+        if (!checkedAll) {
+          setSingleCheck(false);
+        } else if (checkedAll) {
+          setSingleCheck(true);
+        }
+      }
+    }, [checkedAll]);
+
     const handleChange = (event, id) => {
       const newData = rowsData.map((item) => {
         if (id === null) {
@@ -45,26 +61,22 @@ const TableRows = forwardRef(
       setRowsData(newData);
     };
 
-    let checked = [...Array(rowsData.length + 1)].map(() => {
-      return { isChecked: false };
-    });
-
     // =====================CHECKBOX=============================
 
-    useImperativeHandle(ref, () => ({
-      selectAll() {
-        for (let i = 0; i < checked.length; i++) {
-          if (!checkedAll) {
-            checked[i].isChecked = true;
-          } else if (checkedAll) {
-            checked[i].isChecked = false;
-          }
-        }
-        console.log("inside", checked);
-      },
-    }));
+    // useImperativeHandle(ref, () => ({
+    //   selectAll() {
+    //     for (let i = 0; i < checked.length; i++) {
+    //       if (!checkedAll) {
+    //         checked[i].isChecked = true;
+    //       } else if (checkedAll) {
+    //         checked[i].isChecked = false;
+    //       }
+    //     }
+    //     console.log("inside", checked);
+    //   },
+    // }));
 
-    console.log("outside", checked);
+    // console.log("outside", checked);
 
     const toggleCheck = (e, id) => {
       console.log(id);
@@ -81,7 +93,8 @@ const TableRows = forwardRef(
               type="checkbox"
               className="accent-dark w-4 h-4 cursor-pointer border-dark rounded-none"
               onChange={(e) => toggleCheck(e, id)}
-              value={checked[index]}
+              checked={singleCheck}
+              
             />
           </td>
           <td className="px-6 py-4 text-center">
