@@ -1,18 +1,33 @@
 import Axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../index.css";
-import useTable from "./component/hook/useTable";
-import TableFooter from "./component/pagination-footer/TableFooter";
-import TableRows from "./TableRows";
+import Checkbox from "./component/Checkbox";
+import TableRows from "./component/TableRows";
+import TableFooter from "./Layout/pagination-footer/TableFooter";
+import useTable from "./Utils/UseTable";
 
 const Page2 = () => {
+  const CHECKBOX_STATES = {
+    Checked: true,
+    Indeterminate: "Indeterminate",
+    Empty: false,
+  };
   const [rowsData, setRowsData] = useState([]);
   const [page, setPage] = useState(1);
   const [noOfRows, setNoOfrows] = useState(5);
   const { slice, range } = useTable(rowsData, page, noOfRows);
   const [add, setAdd] = useState("");
   const [checkedAll, setCheckedAll] = useState(false);
-  const childRef = useRef();
+  const [isCopied, setIsCopied] = useState(false);
+  const checkArrayLength = slice.length;
+  const checked = [...new Array(checkArrayLength)].map(
+    (_, idx) => idx === false
+  );
+  const [singleCheck, setSingleCheck] = useState(checked);
+
+  useEffect(() => {
+    setSingleCheck([...checked]);
+  }, [checkArrayLength, page]);
 
   let last = 1;
 
@@ -28,8 +43,6 @@ const Page2 = () => {
   useEffect(() => {
     getUsers();
   }, []);
-
-
 
   const getLastId = () => {
     last = rowsData.length;
@@ -58,6 +71,31 @@ const Page2 = () => {
     setRowsData([...rowsData, row]);
   };
 
+  // ==============================Create User===================
+
+  const createUser = async (id, first_name, last_name, email) => {
+    try {
+      const response = await Axios.post("https://reqres.in/api/users", {
+        id,
+        first_name,
+        last_name,
+        email,
+      });
+      const status = response.status;
+
+      switch (status) {
+        case 201:
+          alert("User created");
+          break;
+        default:
+          alert("Something went wrong");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  // ============================================================
+
   //============================ DELETE FROM DB =====================
   const deleteTableRows = (index) => {
     // try {
@@ -77,18 +115,60 @@ const Page2 = () => {
     setRowsData(rows);
   };
 
-  // =====================================================================
-
-
-                  
+  const handleChange = (event, id) => {
+    const newData = rowsData.map((item) => {
+      if (id === null) {
+        return { [event.target.name]: "" };
+      } else if (item.id === id) {
+        return { ...item, [event.target.name]: event.target.value };
+      }
+      return item;
+    });
+    setRowsData(newData);
+  };
 
   // ==================CheckBox================================
-
-  const handleCheckedAll = () => {
-    setCheckedAll(!checkedAll);
-    // childRef.current.selectAll();
+  const selectAll = (value) => {
+    setCheckedAll(value);
+    setSingleCheck(() => {
+      const newState = { ...singleCheck };
+      for (let i = 0; i < checkArrayLength; i++) {
+        newState[i] = value;
+      }
+      return newState;
+    });
   };
-  // ==================================================
+
+  const toggleCheck = (id) => {
+    setSingleCheck(() => {
+      const newState = { ...singleCheck };
+      newState[id] = !singleCheck[id];
+      return newState;
+    });
+  };
+
+  useEffect(() => {
+    const filteredSingleCheck = Object.values(singleCheck);
+    console.log(filteredSingleCheck);
+
+    const isAllChecked = filteredSingleCheck.every((val) => val === true);
+
+    const isAllUnchecked = filteredSingleCheck.every((val) => val === false);
+
+    let updatedChecked;
+
+    if (!isAllChecked && !isAllUnchecked) {
+      updatedChecked = CHECKBOX_STATES.Indeterminate;
+    } else if (!isAllChecked && isAllUnchecked) {
+      updatedChecked = CHECKBOX_STATES.Empty;
+    } else if (isAllChecked && !isAllUnchecked) {
+      updatedChecked = CHECKBOX_STATES.Checked;
+    }
+
+    setCheckedAll(updatedChecked);
+  }, [singleCheck]);
+
+  //===============================================================================
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-4">
@@ -104,12 +184,12 @@ const Page2 = () => {
           </tr>
           <tr>
             <th scope="col" className="px-4 py-4">
-              <input
-                type="checkbox"
-                className="w-4 h-4 cursor-pointer outline-dark outline-1 outline outline-offset-0 rounded-none accent-dark"
-                checked={checkedAll}
-                onChange={handleCheckedAll}
-              ></input>
+              <Checkbox
+                label="Value"
+                value={checkedAll}
+                onChange={(event) => selectAll(event.target.checked)}
+                CHECKBOX_STATES={CHECKBOX_STATES}
+              />
             </th>
             <th scope="col" className="px-6 py-4 text-center">
               id
@@ -134,6 +214,7 @@ const Page2 = () => {
         <tbody>
           {/* {DisplayData} */}
           <TableRows
+            //lifting state up
             rowsData={rowsData}
             slice={slice}
             deleteTableRows={deleteTableRows}
@@ -141,7 +222,14 @@ const Page2 = () => {
             lastId={last}
             setRowsData={setRowsData}
             checkedAll={checkedAll}
-            ref={childRef}
+            setCheckedAll={setCheckedAll}
+            isCopied={isCopied}
+            setIsCopied={setIsCopied}
+            singleCheck={singleCheck}
+            setSingleCheck={setSingleCheck}
+            toggleCheck={toggleCheck}
+            handleChange={handleChange}
+            createUser={createUser}
           />
           <tr>
             <td colSpan="7">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import calculateRange from "../function/calculateRange";
-import sliceData from "../function/sliceData";
+import calculateRange from "./CalculateRange";
+import sliceData from "./SliceData";
 
 const useTable = (data, page, rowsPerPage) => {
   const [tableRange, setTableRange] = useState([]);
